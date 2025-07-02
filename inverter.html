@@ -72,6 +72,12 @@
       margin-bottom: 10px;
       font-size: 1rem;
     }
+    .device-instruction { /* Added style for new instruction */
+        font-size: 0.9em;
+        color: #666;
+        margin-top: -5px; /* Adjust as needed */
+        margin-bottom: 10px;
+    }
     .button-group {
         display: flex;
         flex-wrap: wrap; /* বাটনগুলো ছোট স্ক্রিনে একাধিক লাইনে */
@@ -134,7 +140,7 @@
             flex-grow: 1;
         }
         .button-group button {
-            width: auto; /* বাটনগুলো তাদের বিষয়বস্তুর উপর নির্ভর করে প্রস্থ নেবে */
+            width: auto; /* বাটনগুলো তাদের বিষয়বস্তুর উপর নির্ভর করে প্রস্থ নেবে */
         }
     }
 
@@ -210,8 +216,8 @@
 
     /* PDF Viewer Modal Specific Styles */
     #pdfViewerModal .modal-content {
-      max-width: 90vw; /* ভিউয়ারের জন্য আরও বড় প্রস্থ */
-      max-height: 90vh; /* ভিউয়ারের জন্য আরও বড় উচ্চতা */
+      max-width: 90vw; /* ভিউয়ারের জন্য আরও বড় প্রস্থ */
+      max-height: 90vh; /* ভিউয়ারের জন্য আরও বড় উচ্চতা */
       display: flex;
       flex-direction: column;
       padding: 20px;
@@ -262,7 +268,7 @@
     .pdf-page-canvas {
       border: 1px solid #ccc;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      max-width: 100%; /* ক্যানভাস ভিউয়ারের প্রস্থের সাথে মানানসই */
+      max-width: 100%; /* ক্যানভাস ভিউয়ারের প্রস্থের সাথে মানানসই */
       height: auto;
       cursor: default; /* Default cursor for canvas */
     }
@@ -312,6 +318,8 @@
             <option value="10">10</option>
             <option value="16">16</option>
         </select>
+        <label for="fileInput">পিডিএফ ফাইল নির্বাচন করুন:</label>
+        <p class="device-instruction">আপনার ডিভাইস অনুযায়ী ফাইলটি যেখানে আছে (যেমন, Windows-এ 'This PC', Mac-এ 'Finder', অথবা মোবাইলে 'Files') সেখান থেকে PDF ফাইলটি নির্বাচন করুন।</p>
         <input type="file" id="fileInput" accept="application/pdf" />
     </div>
     
@@ -322,7 +330,6 @@
     </div>
   </div>
 
-  <!-- Custom Modal for Alerts/Messages -->
   <div id="customModal" class="modal-overlay">
     <div class="modal-content">
       <span class="modal-close-btn" onclick="closeCustomModal()">&times;</span>
@@ -334,28 +341,24 @@
     </div>
   </div>
 
-  <!-- PDF Viewer Modal -->
   <div id="pdfViewerModal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">পিডিএফ ভিউয়ার</h3>
         <div class="button-group-inline">
-            <button id="selectAreaBtn" class="btn-sm btn-view-pdf">এরিয়া সিলেক্ট করুন</button>
-            <button id="invertSelectedAreaBtn" class="btn-sm btn-invert-download hidden">সিলেক্টেড এরিয়া ইনভার্ট করুন</button>
+            <button id="selectAreaBtn" class="btn-sm btn-view-pdf">এরিয়া সিলেক্ট করুন</button>
+            <button id="invertSelectedAreaBtn" class="btn-sm btn-invert-download hidden">সিলেক্টেড এরিয়া ইনভার্ট করুন</button>
             <button id="cancelSelectionBtn" class="btn-sm btn-clear-file hidden">সিলেকশন বাতিল করুন</button>
             <span class="modal-close-btn" onclick="closePdfViewerModal()">&times;</span>
         </div>
       </div>
       <div class="modal-body" id="pdfViewerModalBody">
         <div id="pdfViewerContainer" class="w-full h-full">
-          <!-- PDF pages will be rendered here -->
+          </div>
         </div>
-        <!-- Selection overlays will be dynamically added here -->
-      </div>
     </div>
   </div>
 
-  <!-- PDF.js and PDF-LIB.js CDN links -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -402,8 +405,8 @@
     mainContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startDraggingContainer(e.touches[0]); }, {passive: false});
 
     function startDraggingContainer(e) {
-        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'LABEL') {
-            return; // Don't drag if clicking on interactive elements
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'LABEL' || e.target.classList.contains('device-instruction')) {
+            return; // Don't drag if clicking on interactive elements or the instruction text
         }
         isDraggingContainer = true;
         mainContainer.classList.add('dragging');
@@ -695,7 +698,7 @@
         selectAreaBtn.classList.add('hidden');
         invertSelectedAreaBtn.classList.remove('hidden'); // Show invert button
         cancelSelectionBtn.classList.remove('hidden'); // Show cancel button
-        showCustomModal('এরিয়া সিলেক্ট করুন', 'পিডিএফ পৃষ্ঠার উপর মাউস দিয়ে টেনে এরিয়া নির্বাচন করুন। একাধিক এরিয়া সিলেক্ট করতে পারেন।');
+        showCustomModal('এরিয়া সিলেক্ট করুন', 'পিডিএফ পৃষ্ঠার উপর মাউস দিয়ে টেনে এরিয়া নির্বাচন করুন। একাধিক এরিয়া সিলেক্ট করতে পারেন।');
     });
 
     cancelSelectionBtn.addEventListener('click', resetSelectionMode);
@@ -769,178 +772,198 @@
     // New handler for mouseup/touchend/mouseleave/touchcancel on pdfViewerModalBody
     function handleStopDrawingSelection(e) {
         if (!isDrawingSelection || !isSelectionModeActive || !currentDrawingOverlay || !currentSelectedCanvas) return;
-        isDrawingSelection = false;
 
-        // Get final coordinates relative to the original canvas
+        isDrawingSelection = false;
+        
+        // Get final coordinates relative to the current selected canvas
         const coords = getCoordinatesRelativeToElement(e, currentSelectedCanvas);
         const finalX = coords.x;
         const finalY = coords.y;
 
-        // Clamp final coordinates to canvas bounds before calculating selection area
-        const clampedFinalX = Math.max(0, Math.min(finalX, currentSelectedCanvas.clientWidth));
-        const clampedFinalY = Math.max(0, Math.min(finalY, currentSelectedCanvas.clientHeight));
+        // Ensure finalX and finalY are clamped within the canvas bounds
+        const clampedX = Math.max(0, Math.min(finalX, currentSelectedCanvas.clientWidth));
+        const clampedY = Math.max(0, Math.min(finalY, currentSelectedCanvas.clientHeight));
 
-        const x = Math.min(selectionStartX, clampedFinalX);
-        const y = Math.min(selectionStartY, clampedFinalY);
-        const width = Math.abs(selectionStartX - clampedFinalX);
-        const height = Math.abs(selectionStartY - clampedFinalY);
+        const x = Math.min(selectionStartX, clampedX);
+        const y = Math.min(selectionStartY, clampedY);
+        const width = Math.abs(selectionStartX - clampedX);
+        const height = Math.abs(selectionStartY - clampedY);
 
-        if (width > 5 && height > 5) { // Minimum size for a valid selection
-            // Store the selection with its original canvas pixel coordinates (scaled to canvas's internal resolution)
-            const canvasRect = currentSelectedCanvas.getBoundingClientRect();
-            const scaleX = currentSelectedCanvas.width / canvasRect.width;
-            const scaleY = currentSelectedCanvas.height / canvasRect.height;
-
+        // If a valid selection was made (min 5x5 pixels)
+        if (width > 5 && height > 5) {
+            const pageIndex = parseInt(currentSelectedCanvas.dataset.pageIndex);
             selectedAreas.push({
-                x: Math.floor(x * scaleX),
-                y: Math.floor(y * scaleY),
-                width: Math.ceil(width * scaleX),
-                height: Math.ceil(height * scaleY),
-                pageIndex: parseInt(currentSelectedCanvas.dataset.pageIndex),
-                canvasElement: currentSelectedCanvas, // Store reference to the actual canvas element
-                overlayElement: currentDrawingOverlay // Store reference to the overlay element
+                x: x,
+                y: y,
+                width: width,
+                height: height,
+                pageIndex: pageIndex,
+                canvasElement: currentSelectedCanvas,
+                overlayElement: currentDrawingOverlay // Store reference to the overlay div
             });
-            invertSelectedAreaBtn.classList.remove('hidden');
-            showCustomModal('এরিয়া সিলেক্ট করা হয়েছে!', 'আপনি আরও এরিয়া নির্বাচন করতে পারেন অথবা "সিলেক্টেড এরিয়া ইনভার্ট করুন" বাটনে ক্লিক করুন।');
+            invertSelectedAreaBtn.classList.remove('hidden'); // Show invert button
         } else {
-            // If selection is too small, remove the current overlay
-            currentDrawingOverlay.remove();
-            showCustomModal('সিলেকশন বাতিল করা হয়েছে', 'খুব ছোট এরিয়া সিলেক্ট করা হয়েছিল।');
+            // Remove the overlay if the selection was too small
+            if (currentDrawingOverlay) {
+                currentDrawingOverlay.remove();
+            }
         }
         currentDrawingOverlay = null; // Reset for next selection
-        // currentSelectedCanvas = null; // Don't reset here, a new mousedown on another canvas will set it.
+        currentSelectedCanvas = null; // Reset
     }
 
-    invertSelectedAreaBtn.addEventListener('click', async () => {
-        if (selectedAreas.length === 0) {
-            return showCustomModal('সতর্কতা!', 'কোনো এরিয়া নির্বাচন করা হয়নি।');
-        }
-
-        showCustomModal('প্রক্রিয়া চলছে...', '<div class="loading-spinner"></div><p class="text-center">নির্বাচিত এরিয়া ইনভার্ট করা হচ্ছে...</p>', false);
-
-        try {
-            const pdfDocNew = await PDFLib.PDFDocument.create();
-
-            // Create a temporary clone of canvases to apply inversions
-            // This is to ensure original canvas content is not permanently modified in the viewer
-            // for subsequent operations or if the user cancels.
-            const clonedCanvasElements = [];
-            canvasElements.forEach(originalCanvas => {
-                const clonedCanvas = document.createElement('canvas');
-                clonedCanvas.width = originalCanvas.width;
-                clonedCanvas.height = originalCanvas.height;
-                const clonedCtx = clonedCanvas.getContext('2d');
-                clonedCtx.drawImage(originalCanvas, 0, 0); // Draw original content to clone
-                clonedCanvasElements.push(clonedCanvas);
-            });
-
-            // Apply inversion to all selected areas on their respective CLONED canvases
-            selectedAreas.forEach(area => {
-                const canvasToModify = clonedCanvasElements[area.pageIndex];
-                const ctx = canvasToModify.getContext('2d');
-
-                if (ctx && canvasToModify) {
-                    const imageData = ctx.getImageData(0, 0, canvasToModify.width, canvasToModify.height);
-                    const data = imageData.data;
-
-                    const x1 = area.x;
-                    const y1 = area.y;
-                    const x2 = x1 + area.width;
-                    const y2 = y1 + area.height;
-
-                    for (let y = y1; y < y2; y++) {
-                        for (let x = x1; x < x2; x++) {
-                            // Ensure coordinates are within canvas bounds
-                            if (x >= 0 && x < canvasToModify.width && y >= 0 && y < canvasToModify.height) {
-                                const index = (y * canvasToModify.width + x) * 4;
-                                data[index] = 255 - data[index];     // Red
-                                data[index + 1] = 255 - data[index + 1]; // Green
-                                data[index + 2] = 255 - data[index + 2]; // Blue
-                            }
-                        }
-                    }
-                    ctx.putImageData(imageData, 0, 0); // Put modified image data back
-                }
-            });
-
-            // Add all modified cloned canvas pages to the new PDF
-            for (const canvas of clonedCanvasElements) { // Iterate through modified canvases
-                const imgDataUrl = canvas.toDataURL('image/png');
-                const imgBytes = await fetch(imgDataUrl).then(res => res.arrayBuffer());
-                const img = await pdfDocNew.embedPng(imgBytes);
-                const newPage = pdfDocNew.addPage([canvas.width, canvas.height]);
-                newPage.drawImage(img, {
-                    x: 0,
-                    y: 0,
-                    width: canvas.width,
-                    height: canvas.height
-                });
-            }
-
-            const finalPdfBytes = await pdfDocNew.save();
-            const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `inverted_areas_pdf.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            closeCustomModal();
-            showCustomModal('সফল!', 'নির্বাচিত এরিয়াগুলো সফলভাবে ইনভার্ট এবং ডাউনলোড করা হয়েছে!');
-            resetSelectionMode(); // Reset after inversion and download
-
-        } catch (error) {
-            console.error("Area inversion error:", error);
-            closeCustomModal();
-            showCustomModal('ত্রুটি!', 'এরিয়া ইনভার্ট করতে সমস্যা হয়েছে: ' + error.message);
-            resetSelectionMode();
-        }
-    });
 
     function resetSelectionMode() {
         isSelectionModeActive = false;
         isDrawingSelection = false;
+        selectionStartX = 0;
+        selectionStartY = 0;
+        currentDrawingOverlay = null;
+        currentSelectedCanvas = null;
         selectedAreas = []; // Clear all stored selections
 
-        // Remove all dynamically created selection overlay divs
-        document.querySelectorAll('.selection-overlay').forEach(overlay => {
-            overlay.remove();
-        });
+        // Remove all selection overlays
+        document.querySelectorAll('.selection-overlay').forEach(overlay => overlay.remove());
 
-        selectAreaBtn.classList.remove('hidden');
-        invertSelectedAreaBtn.classList.add('hidden');
-        cancelSelectionBtn.classList.add('hidden');
-        
-        // Remove crosshair cursor from all canvases
+        // Reset canvas cursors
         document.querySelectorAll('.pdf-page-canvas').forEach(canvas => {
             canvas.classList.remove('selecting');
         });
-        currentDrawingOverlay = null; // Reset for next selection
-        currentSelectedCanvas = null; // Reset current selected canvas
+
+        selectAreaBtn.classList.remove('hidden');
+        invertSelectedAreaBtn.classList.add('hidden'); // Hide invert button
+        cancelSelectionBtn.classList.add('hidden'); // Hide cancel button
     }
+
+
+    async function invertSelectedArea() {
+        if (selectedAreas.length === 0) {
+            return showCustomModal('সতর্কতা!', 'কোনো এরিয়া সিলেক্ট করা হয়নি। অনুগ্রহ করে প্রথমে এরিয়া নির্বাচন করুন।');
+        }
+        
+        showCustomModal('প্রক্রিয়া চলছে...', '<div class="loading-spinner"></div><p class="text-center">সিলেক্টেড এরিয়া ইনভার্ট করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন...</p>', false);
+
+        try {
+            const pdfDoc = await PDFLib.PDFDocument.load(pdfData); // Load the original PDF
+            const pages = pdfDoc.getPages();
+
+            for (const area of selectedAreas) {
+                const page = pages[area.pageIndex];
+                const canvas = area.canvasElement;
+                const ctx = canvas.getContext('2d');
+
+                // Get the current page's transformation matrix to correctly map canvas coords to PDF coords
+                // PDF-LIB uses points, canvas uses pixels. Need to account for canvas scaling.
+                const pdfPageWidth = page.getWidth();
+                const pdfPageHeight = page.getHeight();
+                const canvasWidth = canvas.width; // This is the actual pixel width of the canvas
+                const canvasHeight = canvas.height; // This is the actual pixel height of the canvas
+
+                // Calculate the scaling factor between canvas pixels and PDF points
+                const scaleX = pdfPageWidth / canvasWidth;
+                const scaleY = pdfPageHeight / canvasHeight;
+
+                // Adjust selection coordinates from canvas pixels to PDF points
+                const pdfX = area.x * scaleX;
+                const pdfY = (canvasHeight - (area.y + area.height)) * scaleY; // PDF Y-axis is from bottom
+                const pdfWidth = area.width * scaleX;
+                const pdfHeight = area.height * scaleY;
+                
+                // Extract the selected area as an image
+                const imageData = ctx.getImageData(area.x, area.y, area.width, area.height);
+                const data = imageData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = 255 - data[i];     // Red
+                    data[i + 1] = 255 - data[i + 1]; // Green
+                    data[i + 2] = 255 - data[i + 2]; // Blue
+                }
+                ctx.putImageData(imageData, area.x, area.y); // Apply inversion back to the canvas for immediate visual feedback
+
+                // Create a temporary canvas for the inverted area to embed into PDF
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = area.width;
+                tempCanvas.height = area.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.putImageData(imageData, 0, 0); // Put the inverted image data onto the temp canvas
+
+                const imgDataUrl = tempCanvas.toDataURL('image/png');
+                const imgBytes = await fetch(imgDataUrl).then(res => res.arrayBuffer());
+                const embeddedImage = await pdfDoc.embedPng(imgBytes);
+
+                // Draw a white rectangle over the original area in the PDF before drawing the inverted image
+                // This is important to ensure the original content is completely covered.
+                page.drawRectangle({
+                    x: pdfX,
+                    y: pdfY,
+                    width: pdfWidth,
+                    height: pdfHeight,
+                    color: PDFLib.rgb(1, 1, 1), // White color to cover
+                });
+
+                // Draw the inverted image onto the PDF page
+                page.drawImage(embeddedImage, {
+                    x: pdfX,
+                    y: pdfY,
+                    width: pdfWidth,
+                    height: pdfHeight,
+                });
+            }
+
+            const modifiedPdfBytes = await pdfDoc.save();
+            const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            // Trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'inverted_selection_pdf.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            closeCustomModal();
+            showCustomModal('সফল!', 'সিলেক্টেড এরিয়া সফলভাবে ইনভার্ট করে পিডিএফ ডাউনলোড করা হয়েছে!');
+            
+            resetSelectionMode(); // Reset selection after download
+            viewPdf(); // Re-render the PDF viewer to show the changes
+        } catch (error) {
+            console.error('Error inverting selected area:', error);
+            closeCustomModal();
+            showCustomModal('ত্রুটি!', 'সিলেক্টেড এরিয়া ইনভার্ট করতে সমস্যা হয়েছে: ' + error.message);
+        }
+    }
+
 
     // --- Custom Modal Functions ---
     function showCustomModal(title, message, showCloseButton = true) {
       modalTitle.textContent = title;
-      modalMessage.innerHTML = message; // Use innerHTML to allow for loading spinner
-      customModal.classList.add('open');
-      customModal.style.display = 'flex';
-
-      const closeBtnElement = customModal.querySelector('.modal-footer button');
-      if (!showCloseButton) {
-        closeBtnElement.style.display = 'none';
+      modalMessage.innerHTML = message; // Use innerHTML for spinner or HTML messages
+      if (showCloseButton) {
+        customModal.querySelector('.modal-close-btn').style.display = 'block';
+        customModal.querySelector('.modal-footer button').style.display = 'block';
       } else {
-        closeBtnElement.style.display = 'inline-block';
+        customModal.querySelector('.modal-close-btn').style.display = 'none';
+        customModal.querySelector('.modal-footer button').style.display = 'none';
       }
+      customModal.classList.add('open');
     }
 
     function closeCustomModal() {
       customModal.classList.remove('open');
+      // A small delay to allow for the transition to finish before hiding
       setTimeout(() => {
         customModal.style.display = 'none';
-      }, 300);
+      }, 300); 
     }
+
+    // Set display to flex initially for modal-overlay to ensure it's hidden via opacity/visibility
+    // but correctly laid out when .open is added.
+    customModal.style.display = 'flex'; 
+    pdfViewerModal.style.display = 'flex';
+
+    // Event listener for invert selected area button
+    invertSelectedAreaBtn.addEventListener('click', invertSelectedArea);
   </script>
 </body>
 </html>
