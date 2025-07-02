@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Custom styles for Inter font and general body styling -->
     <style>
+        /* Google Fonts থেকে Inter ফন্ট ইম্পোর্ট করা হয়েছে */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
             background-image: url('hello.jpg'); /* hello.jpg ইমেজটি যোগ করা হয়েছে */
@@ -41,6 +44,18 @@
             transform: translateX(-100%); /* প্রাথমিকভাবে লুকানো */
             background: linear-gradient(135deg, #333333 0%, #000000 100%); /* গাঢ় ধূসর থেকে কালো গ্রেডিয়েন্ট */
             position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 40;
+            padding: 1.5rem; /* 24px */
+            display: flex;
+            flex-direction: column;
+            space-y: 1rem; /* 16px */
+
+            /* মোবাইল ডিভাইসের জন্য সম্পূর্ণ উচ্চতা এবং ছোট প্রস্থ */
+            width: 80%; /* ছোট স্ক্রিনে মেনুর প্রস্থ */
+            max-width: 280px; /* সর্বোচ্চ প্রস্থ সেট করা হয়েছে */
         }
         #main-menu.open {
             transform: translateX(0); /* দেখা যাবে */
@@ -86,6 +101,17 @@
             display: inline-block;
             letter-spacing: .15em;
             vertical-align: middle;
+            font-size: 1.5rem; /* মোবাইল ফন্ট সাইজ */
+        }
+        @media (min-width: 768px) {
+            #dynamic-text-display {
+                font-size: 2rem; /* ট্যাবলেট ফন্ট সাইজ */
+            }
+        }
+        @media (min-width: 1024px) {
+            #dynamic-text-display {
+                font-size: 2.5rem; /* ডেস্কটপ ফন্ট সাইজ */
+            }
         }
 
         /* ব্লিঙ্কিং কার্সারের জন্য */
@@ -117,7 +143,6 @@
             position: absolute; /* ড্র্যাগ করার জন্য absolute পজিশন */
             cursor: grab; /* ডিফল্ট কার্সার গ্র্যাব মোডে */
             user-select: none; /* টেক্সট সিলেকশন প্রতিরোধ */
-            /* top, left, এবং transform প্রপার্টিগুলো জাভাস্ক্রিপ্ট দ্বারা নিয়ন্ত্রণ করা হবে */
             touch-action: none; /* টাচ ইভেন্টের জন্য ডিফল্ট ব্রাউজার অ্যাকশন অক্ষম করুন */
             z-index: 20; /* মেনুর নিচে কিন্তু অন্যান্য কন্টেন্টের উপরে */
             transition: transform 0.1s ease-out; /* স্মুথ ড্র্যাগিং */
@@ -125,24 +150,32 @@
             flex-direction: column; /* উল্লম্বভাবে সাজানোর জন্য */
             align-items: center; /* মাঝখানে সাজানোর জন্য */
             justify-content: center; /* মাঝখানে সাজানোর জন্য */
+            padding: 10px; /* প্যাডিং যোগ করা হয়েছে */
+
+            /* মোবাইল স্ক্রিনের জন্য ডিফল্ট পজিশন */
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100px; /* হেডার এর নিচে */
+            width: 90%; /* ছোট স্ক্রিনে প্রায় পূর্ণ প্রস্থ */
+            max-width: 300px; /* সর্বোচ্চ প্রস্থ সেট করা হয়েছে */
         }
 
         /* অ্যানালগ ঘড়ির স্টাইল */
         .analog-clock {
-            width: 300px;
-            height: 300px;
+            width: 220px; /* ছোট স্ক্রিনের জন্য আকার কমানো হয়েছে */
+            height: 220px;
             background: linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 100%); /* হালকা নীল গ্রেডিয়েন্ট */
-            border: 10px solid #2196f3; /* নীল বর্ডার */
+            border: 8px solid #2196f3; /* নীল বর্ডার */
             border-radius: 50%;
             position: relative;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(0, 0, 0, 0.15); /* আরও স্পষ্ট শ্যাডো */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.1); /* আরও স্পষ্ট শ্যাডো */
             margin-bottom: 10px;
         }
         .analog-clock::after {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 12px; /* ছোট করা হয়েছে */
+            height: 12px; /* ছোট করা হয়েছে */
             background-color: #2196f3; /* নীল কেন্দ্রবিন্দু */
             border-radius: 50%;
             top: 50%;
@@ -159,22 +192,22 @@
             border-radius: 5px;
         }
         .hour {
-            width: 8px;
-            height: 80px;
+            width: 6px; /* ছোট করা হয়েছে */
+            height: 60px; /* ছোট করা হয়েছে */
             transform: translate(-50%, -100%) rotate(0deg);
             z-index: 7;
             background-color: #333; /* ঘন্টার কাঁটা গাঢ় ধূসর */
         }
         .minute {
-            width: 6px;
-            height: 110px;
+            width: 4px; /* ছোট করা হয়েছে */
+            height: 90px; /* ছোট করা হয়েছে */
             transform: translate(-50%, -100%) rotate(0deg);
             z-index: 8;
             background-color: #555; /* মিনিটের কাঁটা মাঝারি ধূসর */
         }
         .second {
-            width: 3px;
-            height: 120px;
+            width: 2px; /* ছোট করা হয়েছে */
+            height: 100px; /* ছোট করা হয়েছে */
             background-color: #f44336; /* সেকেন্ডের কাঁটা লাল */
             transform: translate(-50%, -100%) rotate(0deg);
             z-index: 9;
@@ -182,43 +215,43 @@
 
         /* ডিজিটাল ঘড়ির স্টাইল */
         .digital-clock {
-            width: 300px;
-            height: 150px;
+            width: 260px; /* ছোট স্ক্রিনের জন্য আকার কমানো হয়েছে */
+            height: 100px; /* ছোট করা হয়েছে */
             background: linear-gradient(135deg, #1a202c 0%, #000000 100%); /* গাঢ় ধূসর থেকে কালো গ্রেডিয়েন্ট */
             color: #00ff00; /* সবুজ রঙের অক্ষর */
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 3.5rem;
+            font-size: 2.5rem; /* ফন্ট সাইজ ছোট করা হয়েছে */
             font-weight: bold;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.1); /* আরও স্পষ্ট শ্যাডো ও ইনসেট শ্যাডো */
+            box-shadow: 0 0 15px rgba(0,0,0,0.4), inset 0 0 8px rgba(255,255,255,0.1); /* আরও স্পষ্ট শ্যাডো ও ইনসেট শ্যাডো */
             padding: 10px;
-            border: 5px solid #00c853; /* সবুজ বর্ডার */
+            border: 4px solid #00c853; /* সবুজ বর্ডার */
             margin-bottom: 10px;
-            text-shadow: 0 0 8px rgba(0,255,0,0.7); /* টেক্সট শ্যাডো */
+            text-shadow: 0 0 6px rgba(0,255,0,0.6); /* টেক্সট শ্যাডো */
         }
 
         /* মিনিমালিস্ট ডিজিটাল ঘড়ির স্টাইল */
         .minimalist-digital-clock {
-            width: 250px; /* কিছুটা ছোট */
-            height: 100px;
+            width: 200px; /* ছোট করা হয়েছে */
+            height: 70px; /* ছোট করা হয়েছে */
             background-color: #f0f0f0; /* হালকা ধূসর ব্যাকগ্রাউন্ড */
             color: #333; /* গাঢ় টেক্সট */
             border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.5rem;
+            font-size: 1.8rem; /* ফন্ট সাইজ ছোট করা হয়েছে */
             font-weight: 600; /* সেমি-বোল্ড */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            padding: 5px 15px;
-            border: 2px solid #ddd;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 5px 10px;
+            border: 1px solid #ddd;
             margin-bottom: 10px;
         }
         .minimalist-digital-clock span {
             /* টেক্সটকে আলাদা করার জন্য সামান্য মার্জিন */
-            margin: 0 5px;
+            margin: 0 3px;
         }
 
         /* টগল বাটনের স্টাইল */
@@ -242,35 +275,37 @@
         #quiz-container {
             position: fixed;
             bottom: 20px;
-            right: 20px;
-            width: 350px; /* কুইজ বক্সের প্রস্থ */
+            left: 50%; /* ছোট স্ক্রিনে মাঝখানে */
+            transform: translateX(-50%); /* ছোট স্ক্রিনে মাঝখানে */
+            width: 90%; /* ছোট স্ক্রিনে প্রায় পূর্ণ প্রস্থ */
+            max-width: 320px; /* সর্বোচ্চ প্রস্থ সেট করা হয়েছে */
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 15px; /* প্যাডিং কমানো হয়েছে */
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px; /* ব্যবধান কমানো হয়েছে */
             z-index: 100; /* নিশ্চিত করুন এটি অন্যান্য উপাদানের উপরে থাকে */
-            border: 2px solid #a0aec0; /* হালকা ধূসর বর্ডার */
+            border: 1px solid #cbd5e0; /* হালকা ধূসর বর্ডার */
         }
 
         #quiz-question {
-            font-size: 1.1rem;
+            font-size: 1rem; /* ফন্ট সাইজ কমানো হয়েছে */
             font-weight: 600;
             color: #2d3748;
-            margin-bottom: 10px;
+            margin-bottom: 8px; /* মার্জিন কমানো হয়েছে */
         }
 
         .quiz-option-button {
             background-color: #edf2f7; /* হালকা ব্যাকগ্রাউন্ড */
             color: #2d3748;
-            padding: 10px 15px;
+            padding: 8px 12px; /* প্যাডিং কমানো হয়েছে */
             border-radius: 5px;
             text-align: left;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease;
-            font-size: 0.95rem;
+            font-size: 0.9rem; /* ফন্ট সাইজ কমানো হয়েছে */
             border: 1px solid #cbd5e0;
             width: 100%; /* সম্পূর্ণ প্রস্থ জুড়ে */
         }
@@ -297,13 +332,13 @@
             border-color: #dc2626;
         }
 
-        #quiz-next-button, #quiz-start-button, #quiz-quit-button { /* #quiz-quit-button যোগ করা হয়েছে */
+        #quiz-next-button, #quiz-start-button, #quiz-quit-button {
             background-color: #4299e1; /* নীল */
             color: white;
-            padding: 10px 20px;
+            padding: 8px 15px; /* প্যাডিং কমানো হয়েছে */
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem; /* ফন্ট সাইজ কমানো হয়েছে */
             font-weight: 600;
             transition: background-color 0.2s ease, transform 0.1s ease;
             align-self: flex-end; /* ডানদিকে সারিবদ্ধ */
@@ -319,7 +354,7 @@
             cursor: not-allowed;
         }
 
-        #quiz-quit-button { /* কুইট বাটনের জন্য আলাদা স্টাইল */
+        #quiz-quit-button {
             background-color: #f56565; /* লালচে রঙ */
             align-self: flex-start; /* বাম দিকে সারিবদ্ধ */
         }
@@ -329,10 +364,115 @@
         }
 
         #quiz-score {
-            font-size: 1rem;
+            font-size: 0.9rem; /* ফন্ট সাইজ কমানো হয়েছে */
             font-weight: 500;
             color: #4a5568;
             text-align: right; /* স্কোর ডানদিকে */
+        }
+
+        /* মিডিয়াম স্ক্রিনের জন্য (যেমন ট্যাবলেট) */
+        @media (min-width: 768px) {
+            #main-menu {
+                width: 250px; /* মিডিয়াম স্ক্রিনে মেনুর প্রস্থ */
+                max-width: none; /* ম্যাক্স-উইডথ বাতিল */
+            }
+            .clock-container {
+                left: auto; /* আবার ডানদিকে ফিক্সড পজিশন */
+                transform: none; /* ট্রান্সফর্ম বাতিল */
+                right: 20px; /* ডানদিকে পজিশন */
+                top: 100px; /* হেডার এর নিচে */
+                width: auto; /* কন্টেন্টের উপর ভিত্তি করে প্রস্থ */
+                max-width: 350px;
+            }
+            .analog-clock {
+                width: 280px;
+                height: 280px;
+                border-width: 10px;
+            }
+            .analog-clock::after {
+                width: 16px;
+                height: 16px;
+            }
+            .hour {
+                width: 8px;
+                height: 75px;
+            }
+            .minute {
+                width: 6px;
+                height: 105px;
+            }
+            .second {
+                width: 3px;
+                height: 115px;
+            }
+            .digital-clock {
+                width: 300px;
+                height: 130px;
+                font-size: 3.2rem;
+                border-width: 5px;
+            }
+            .minimalist-digital-clock {
+                width: 240px;
+                height: 90px;
+                font-size: 2.2rem;
+                border-width: 2px;
+            }
+            #quiz-container {
+                width: 350px; /* মিডিয়াম স্ক্রিনে নির্দিষ্ট প্রস্থ */
+                left: auto; /* আবার ডানদিকে ফিক্সড পজিশন */
+                transform: none; /* ট্রান্সফর্ম বাতিল */
+                right: 20px; /* ডানদিকে পজিশন */
+                padding: 20px;
+                gap: 15px;
+            }
+            #quiz-question {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+            .quiz-option-button {
+                padding: 10px 15px;
+                font-size: 0.95rem;
+            }
+            #quiz-next-button, #quiz-start-button, #quiz-quit-button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            #quiz-score {
+                font-size: 1rem;
+            }
+        }
+
+        /* লার্জ স্ক্রিনের জন্য (যেমন ডেস্কটপ) */
+        @media (min-width: 1024px) {
+            #main-menu {
+                width: 280px; /* লার্জ স্ক্রিনে মেনুর প্রস্থ */
+            }
+            .analog-clock {
+                width: 300px;
+                height: 300px;
+            }
+            .hour {
+                height: 80px;
+            }
+            .minute {
+                height: 110px;
+            }
+            .second {
+                height: 120px;
+            }
+            .digital-clock {
+                width: 320px;
+                height: 150px;
+                font-size: 3.5rem;
+            }
+            .minimalist-digital-clock {
+                width: 250px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+            #quiz-container {
+                width: 350px; /* লার্জ স্ক্রিনে নির্দিষ্ট প্রস্থ */
+            }
         }
     </style>
 </head>
@@ -466,7 +606,7 @@
                 <button id="quiz-next-button" class="hidden">পরবর্তী প্রশ্ন</button>
             </div>
         </div>
-        <!-- কুইজ স্টার্ট বাটন, 'hidden' ক্লাস সরানো হয়েছে এবং টেক্সট পরিবর্তন করা হয়েছে -->
+        <!-- কুইজ স্টার্ট বাটন, 'hidden' ক্লাস সরানো হয়েছে এবং টেক্সট পরিবর্তন করা হয়েছে -->
         <button id="quiz-start-button">Quiz From Tawsif</button>
     </div>
 
@@ -755,320 +895,296 @@
             const viewportHeight = window.innerHeight;
 
             const getCenteredOffsets = (width, height, buttonHeight = 0) => {
-                const totalHeight = height + buttonHeight + 10;
-                // Initially center the entire clock-container (clock + button)
+                const totalHeight = height + buttonHeight + 20; // ঘড়ি এবং বাটনের মোট উচ্চতা + মার্জিন
                 return {
                     x: (viewportWidth / 2) - (width / 2),
                     y: (viewportHeight / 2) - (totalHeight / 2)
                 };
             };
 
-            const commonButtonHeight = 48; // আনুমানিক বাটন উচ্চতা
+            // অ্যানালগ ঘড়ির জন্য
+            const analogClockRect = analogClockContainer.getBoundingClientRect();
+            const analogButtonHeight = toggleClockButtonAnalog.offsetHeight;
+            const analogCenter = getCenteredOffsets(analogClockRect.width, analogClockRect.height, analogButtonHeight);
+            clockOffsets.analog.x = analogCenter.x;
+            clockOffsets.analog.y = analogCenter.y;
+            // analogClockContainer.style.left = `${analogCenter.x}px`; // CSS handles this for small screens
+            // analogClockContainer.style.top = `${analogCenter.y}px`; // CSS handles this for small screens
 
-            // Analog clock dimensions
-            const analogWidth = 300;
-            const analogHeight = 300;
-            const analogCentered = getCenteredOffsets(analogWidth, analogHeight, commonButtonHeight);
-            clockOffsets.analog.x = analogCentered.x;
-            clockOffsets.analog.y = analogCentered.y;
-            setTranslate(clockOffsets.analog.x, clockOffsets.analog.y, analogClockContainer);
+            // ডিজিটাল ঘড়ির জন্য
+            const digitalClockRect = digitalClockContainer.getBoundingClientRect();
+            const digitalButtonHeight = toggleClockButtonDigital.offsetHeight;
+            const digitalCenter = getCenteredOffsets(digitalClockRect.width, digitalClockRect.height, digitalButtonHeight);
+            clockOffsets.digital.x = digitalCenter.x;
+            clockOffsets.digital.y = digitalCenter.y;
+            // digitalClockContainer.style.left = `${digitalCenter.x}px`;
+            // digitalClockContainer.style.top = `${digitalCenter.y}px`;
 
-            // Digital clock dimensions
-            const digitalWidth = 300;
-            const digitalHeight = 150;
-            const digitalCentered = getCenteredOffsets(digitalWidth, digitalHeight, commonButtonHeight);
-            clockOffsets.digital.x = digitalCentered.x;
-            clockOffsets.digital.y = digitalCentered.y;
-
-            // Minimalist Digital clock dimensions
-            const minimalistWidth = 250;
-            const minimalistHeight = 100;
-            const minimalistCentered = getCenteredOffsets(minimalistWidth, minimalistHeight, commonButtonHeight);
-            clockOffsets.minimalist.x = minimalistCentered.x;
-            clockOffsets.minimalist.y = minimalistCentered.y;
+            // মিনিমালিস্ট ডিজিটাল ঘড়ির জন্য
+            const minimalistClockRect = minimalistDigitalClockContainer.getBoundingClientRect();
+            const minimalistButtonHeight = toggleClockButtonMinimalist.offsetHeight;
+            const minimalistCenter = getCenteredOffsets(minimalistClockRect.width, minimalistClockRect.height, minimalistButtonHeight);
+            clockOffsets.minimalist.x = minimalistCenter.x;
+            clockOffsets.minimalist.y = minimalistCenter.y;
+            // minimalistDigitalClockContainer.style.left = `${minimalistCenter.x}px`;
+            // minimalistDigitalClockContainer.style.top = `${minimalistCenter.y}px`;
         }
 
-        function toggleClocks() {
-            const currentClockContainer = clockContainers[currentClockTypeIndex];
-            const currentStyle = window.getComputedStyle(currentClockContainer);
-            
-            let currentX = parseFloat(currentStyle.left);
-            let currentY = parseFloat(currentStyle.top);
+        function showClock(index) {
+            clockContainers.forEach((container, i) => {
+                if (i === index) {
+                    container.classList.remove('hidden');
+                    // Only apply JS positioning for larger screens where CSS doesn't center
+                    if (window.innerWidth >= 768) {
+                        const currentClockId = container.id.replace('-container', '');
+                        container.style.left = `${clockOffsets[currentClockId].x}px`;
+                        container.style.top = `${clockOffsets[currentClockId].y}px`;
+                    } else {
+                        // For small screens, rely on CSS for centering
+                        container.style.left = '50%';
+                        container.style.top = '100px';
+                        container.style.transform = 'translateX(-50%)';
+                    }
+                } else {
+                    container.classList.add('hidden');
+                }
+            });
+        }
 
-            if (isNaN(currentX)) currentX = 0;
-            if (isNaN(currentY)) currentY = 0;
-
-            if (currentClockTypeIndex === 0) { // analog
-                clockOffsets.analog.x = currentX;
-                clockOffsets.analog.y = currentY;
-            } else if (currentClockTypeIndex === 1) { // digital
-                clockOffsets.digital.x = currentX;
-                clockOffsets.digital.y = currentY;
-            } else if (currentClockTypeIndex === 2) { // minimalist
-                clockOffsets.minimalist.x = currentX;
-                clockOffsets.minimalist.y = currentY;
-            }
-
-            currentClockContainer.classList.add('hidden');
-
+        function toggleClockType() {
             currentClockTypeIndex = (currentClockTypeIndex + 1) % clockContainers.length;
-            const nextClockContainer = clockContainers[currentClockTypeIndex];
-
-            if (currentClockTypeIndex === 0) { // analog
-                setTranslate(clockOffsets.analog.x, clockOffsets.analog.y, nextClockContainer);
-            } else if (currentClockTypeIndex === 1) { // digital
-                setTranslate(clockOffsets.digital.x, clockOffsets.digital.y, nextClockContainer);
-            } else if (currentClockTypeIndex === 2) { // minimalist
-                setTranslate(clockOffsets.minimalist.x, clockOffsets.minimalist.y, nextClockContainer);
-            }
-            nextClockContainer.classList.remove('hidden');
+            showClock(currentClockTypeIndex);
         }
 
-        toggleClockButtonAnalog.addEventListener('click', toggleClocks);
-        toggleClockButtonDigital.addEventListener('click', toggleClocks);
-        toggleClockButtonMinimalist.addEventListener('click', toggleClocks);
+        toggleClockButtonAnalog.addEventListener('click', toggleClockType);
+        toggleClockButtonDigital.addEventListener('click', toggleClockType);
+        toggleClockButtonMinimalist.addEventListener('click', toggleClockType);
 
-        // ড্র্যাগিং ফাংশনালিটি (যে ক্লকটি অ্যাকটিভ আছে তার জন্য)
-        analogClockContainer.addEventListener('mousedown', dragStartClock);
-        analogClockContainer.addEventListener('touchstart', dragStartClock);
-        digitalClockContainer.addEventListener('mousedown', dragStartClock);
-        digitalClockContainer.addEventListener('touchstart', dragStartClock);
-        minimalistDigitalClockContainer.addEventListener('mousedown', dragStartClock);
-        minimalistDigitalClockContainer.addEventListener('touchstart', dragStartClock);
-
-        function dragStartClock(e) {
-            // Check if the click originated from a toggle button to prevent dragging when toggling
-            const target = e.target;
-            if (target === toggleClockButtonAnalog || target === toggleClockButtonDigital || target === toggleClockButtonMinimalist ||
-                toggleClockButtonAnalog.contains(target) || toggleClockButtonDigital.contains(target) || toggleClockButtonMinimalist.contains(target)) {
-                return;
-            }
-
-            currentDraggedClockElement = this; // Store the reference to the element being dragged
-
-            let clientX, clientY;
-            if (e.type === "touchstart") {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-            
-            const style = window.getComputedStyle(currentDraggedClockElement);
-            const currentLeft = parseFloat(style.left) || 0;
-            const currentTop = parseFloat(style.top) || 0;
-
-            clockInitialX = clientX - currentLeft;
-            clockInitialY = clientY - currentTop;
-
+        // ঘড়ি ড্র্যাগ করার ফাংশন
+        function startDragging(e) {
             clockIsDragging = true;
+            currentDraggedClockElement = e.currentTarget;
             currentDraggedClockElement.style.cursor = 'grabbing';
-        }
 
-        document.addEventListener('mousemove', dragClock);
-        document.addEventListener('touchmove', dragClock);
+            const rect = currentDraggedClockElement.getBoundingClientRect();
+            clockInitialX = e.clientX - rect.left;
+            clockInitialY = e.clientY - rect.top;
+
+            // টাচ ইভেন্টের জন্য
+            if (e.type === 'touchstart') {
+                clockInitialX = e.touches[0].clientX - rect.left;
+                clockInitialY = e.touches[0].clientY - rect.top;
+            }
+        }
 
         function dragClock(e) {
-            if (!clockIsDragging || !currentDraggedClockElement) return; // Ensure element is defined
-            e.preventDefault();
+            if (!clockIsDragging) return;
 
-            let clientX, clientY;
-            if (e.type === "touchmove") {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
+            e.preventDefault(); // ডিফল্ট স্ক্রলিং প্রতিরোধ
+
+            let newX, newY;
+
+            if (e.type === 'touchmove') {
+                newX = e.touches[0].clientX - clockInitialX;
+                newY = e.touches[0].clientY - clockInitialY;
             } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
+                newX = e.clientX - clockInitialX;
+                newY = e.clientY - clockInitialY;
             }
-            
-            const newX = clientX - clockInitialX;
-            const newY = clientY - clockInitialY;
 
-            // Update the stored offsets for the *currently dragged* clock and apply
-            const activeClockIndex = clockContainers.indexOf(currentDraggedClockElement);
-            if (activeClockIndex === 0) {
-                clockOffsets.analog.x = newX;
-                clockOffsets.analog.y = newY;
-            } else if (activeClockIndex === 1) {
-                clockOffsets.digital.x = newX;
-                clockOffsets.digital.y = newY;
-            } else if (activeClockIndex === 2) {
-                clockOffsets.minimalist.x = newX;
-                clockOffsets.minimalist.y = newY;
-            }
-            
-            setTranslate(newX, newY, currentDraggedClockElement);
+            const containerWidth = currentDraggedClockElement.offsetWidth;
+            const containerHeight = currentDraggedClockElement.offsetHeight;
+
+            // ভিউপোর্ট সীমার মধ্যে রাখা
+            newX = Math.max(0, Math.min(newX, window.innerWidth - containerWidth));
+            newY = Math.max(0, Math.min(newY, window.innerHeight - containerHeight));
+
+            currentDraggedClockElement.style.left = `${newX}px`;
+            currentDraggedClockElement.style.top = `${newY}px`;
+            currentDraggedClockElement.style.transform = 'none'; // ড্র্যাগ করার সময় ট্রান্সফর্ম বাতিল
+
+            // অফসেট আপডেট করা
+            const currentClockId = currentDraggedClockElement.id.replace('-container', '');
+            clockOffsets[currentClockId].x = newX;
+            clockOffsets[currentClockId].y = newY;
         }
 
-        document.addEventListener('mouseup', dragEndClock);
-        document.addEventListener('touchend', dragEndClock);
-
-        function dragEndClock() {
-            if (!currentDraggedClockElement) return; // Ensure element is defined
+        function stopDragging() {
             clockIsDragging = false;
-            currentDraggedClockElement.style.cursor = 'grab';
-            currentDraggedClockElement = null; // Reset the reference after drag ends
-        }
-
-        function setTranslate(xPos, yPos, el) {
-            el.style.left = `${xPos}px`;
-            el.style.top = `${yPos}px`;
-            el.style.transform = `none`; // Remove any conflicting transforms
-        }
-
-        // কুইজ জাভাস্ক্রিপ্ট
-        const quizQuestions = [
-            {
-                question: "বাংলাদেশের রাজধানীর নাম কি?",
-                options: ["ঢাকা", "চট্টগ্রাম", "খুলনা", "সিলেট"],
-                correctAnswerIndex: 0
-            },
-            {
-                question: "পৃথিবীর বৃহত্তম মহাসাগর কোনটি?",
-                options: ["আটলান্টিক মহাসাগর", "ভারত মহাসাগর", "প্রশান্ত মহাসাগর", "আর্কটিক মহাসাগর"],
-                correctAnswerIndex: 2
-            },
-            {
-                question: "সূর্য কি?",
-                options: ["গ্রহ", "তারা", "উপগ্রহ", "উল্কাপিণ্ড"],
-                correctAnswerIndex: 1
-            },
-            {
-                question: "কোন প্রাণীটি ডিম পাড়ে না?",
-                options: ["সাপ", "পাখি", "গরু", "মাছ"],
-                correctAnswerIndex: 2
-            },
-            {
-                question: "মুক্তিযুদ্ধের সময় বাংলাদেশের অস্থায়ী সরকারের প্রধানমন্ত্রী কে ছিলেন?",
-                options: ["বঙ্গবন্ধু শেখ মুজিবুর রহমান", "তাজউদ্দীন আহমদ", "সৈয়দ নজরুল ইসলাম", "এম মনসুর আলী"],
-                correctAnswerIndex: 1
+            if (currentDraggedClockElement) {
+                currentDraggedClockElement.style.cursor = 'grab';
+                currentDraggedClockElement = null;
             }
-        ];
+        }
+
+        // মাউস ইভেন্ট লিসেনার
+        analogClockContainer.addEventListener('mousedown', startDragging);
+        digitalClockContainer.addEventListener('mousedown', startDragging);
+        minimalistDigitalClockContainer.addEventListener('mousedown', startDragging);
+
+        document.addEventListener('mousemove', dragClock);
+        document.addEventListener('mouseup', stopDragging);
+
+        // টাচ ইভেন্ট লিসেনার
+        analogClockContainer.addEventListener('touchstart', startDragging, { passive: false });
+        digitalClockContainer.addEventListener('touchstart', startDragging, { passive: false });
+        minimalistDigitalClockContainer.addEventListener('touchstart', startDragging, { passive: false });
+
+        document.addEventListener('touchmove', dragClock, { passive: false });
+        document.addEventListener('touchend', stopDragging);
+        document.addEventListener('touchcancel', stopDragging);
+
+
+        // কুইজের জন্য জাভাস্ক্রিপ্ট
+        const quizContainer = document.getElementById('quiz-container');
+        const quizStartButton = document.getElementById('quiz-start-button');
+        const quizContent = document.getElementById('quiz-content');
+        const quizQuestion = document.getElementById('quiz-question');
+        const quizOptions = document.getElementById('quiz-options');
+        const quizOptionButtons = quizOptions.querySelectorAll('.quiz-option-button');
+        const quizNextButton = document.getElementById('quiz-next-button');
+        const quizQuitButton = document.getElementById('quiz-quit-button'); // কুইট বাটন
+        const quizScoreDisplay = document.getElementById('quiz-score');
 
         let currentQuestionIndex = 0;
         let score = 0;
-        let quizStarted = false;
+        let quizActive = false;
 
-        const quizContainer = document.getElementById('quiz-container');
-        const quizContent = document.getElementById('quiz-content');
-        const quizQuestion = document.getElementById('quiz-question');
-        const quizOptionsContainer = document.getElementById('quiz-options');
-        const quizOptionButtons = quizOptionsContainer.querySelectorAll('.quiz-option-button');
-        const quizScoreDisplay = document.getElementById('quiz-score');
-        const quizNextButton = document.getElementById('quiz-next-button');
-        const quizStartButton = document.getElementById('quiz-start-button');
-        const quizQuitButton = document.getElementById('quiz-quit-button'); // কুইট বাটনের রেফারেন্স
+        const quizQuestions = [
+            {
+                question: "বাংলাদেশের রাজধানীর নাম কী?",
+                options: ["চট্টগ্রাম", "ঢাকা", "খুলনা", "সিলেট"],
+                correctAnswer: 1
+            },
+            {
+                question: "বাংলাদেশের জাতীয় ফুল কোনটি?",
+                options: ["গোলাপ", "শাপলা", "জবা", "কমল"],
+                correctAnswer: 1
+            },
+            {
+                question: "বাংলাদেশের জাতীয় ফল কোনটি?",
+                options: ["আম", "কাঁঠাল", "লিচু", "পেয়ারা"],
+                correctAnswer: 1
+            },
+            {
+                question: "বাংলাদেশের স্বাধীনতা দিবস কবে?",
+                options: ["১৬ই ডিসেম্বর", "২৬শে মার্চ", "২১শে ফেব্রুয়ারি", "১৪ই এপ্রিল"],
+                correctAnswer: 1
+            },
+            {
+                question: "বাংলাদেশের জাতীয় পাখি কোনটি?",
+                options: ["ময়না", "কাক", "দোয়েল", "টিয়া"],
+                correctAnswer: 2
+            }
+        ];
 
-        // কুইজ শুরু করার ফাংশন
         function startQuiz() {
-            quizStarted = true;
+            quizActive = true;
             currentQuestionIndex = 0;
             score = 0;
-            quizStartButton.classList.add('hidden'); // স্টার্ট বাটন লুকান
-            quizContent.classList.remove('hidden'); // কুইজের বিষয়বস্তু দৃশ্যমান করুন
-            quizScoreDisplay.classList.remove('hidden'); // স্কোর দৃশ্যমান করুন
-            quizQuitButton.classList.remove('hidden'); // কুইট বাটন দৃশ্যমান করুন
-            displayQuestion();
+            quizStartButton.classList.add('hidden');
+            quizContent.classList.remove('hidden');
+            quizNextButton.classList.add('hidden'); // পরবর্তী প্রশ্ন বাটন লুকানো
+            quizQuitButton.classList.remove('hidden'); // কুইট বাটন দেখানো
+            loadQuestion();
             updateScore();
         }
 
-        // প্রশ্ন এবং অপশন ডিসপ্লে করার ফাংশন
-        function displayQuestion() {
+        function loadQuestion() {
             if (currentQuestionIndex < quizQuestions.length) {
                 const questionData = quizQuestions[currentQuestionIndex];
                 quizQuestion.textContent = questionData.question;
 
                 quizOptionButtons.forEach((button, index) => {
                     button.textContent = questionData.options[index];
-                    button.classList.remove('correct', 'incorrect'); // আগের স্টাইল মুছে দিন
-                    button.disabled = false; // অপশনগুলো এনাবল করুন
-                    button.onclick = () => checkAnswer(index); // ইভেন্ট লিসেনার সেট করুন
+                    button.classList.remove('correct', 'incorrect');
+                    button.disabled = false; // বাটন সক্রিয় করা
+                    button.removeEventListener('click', handleOptionClick); // ডুপ্লিকেট ইভেন্ট লিসেনার প্রতিরোধ
+                    button.addEventListener('click', handleOptionClick);
                 });
-                quizNextButton.disabled = true; // পরবর্তী বাটন ডিজেবল করুন
-                quizNextButton.classList.add('hidden'); // পরবর্তী বাটন লুকান
+                quizNextButton.disabled = true; // পরবর্তী প্রশ্ন বাটন প্রাথমিকভাবে অক্ষম
             } else {
                 endQuiz();
             }
         }
 
-        // উত্তর চেক করার ফাংশন
-        function checkAnswer(selectedIndex) {
-            const questionData = quizQuestions[currentQuestionIndex];
-            if (selectedIndex === questionData.correctAnswerIndex) {
+        function handleOptionClick(event) {
+            if (!quizActive) return; // কুইজ সক্রিয় না থাকলে কিছু করবে না
+
+            const selectedOptionIndex = parseInt(event.target.dataset.optionIndex);
+            const correctAnswerIndex = quizQuestions[currentQuestionIndex].correctAnswer;
+
+            quizOptionButtons.forEach((button, index) => {
+                button.disabled = true; // সব বাটন অক্ষম করা
+
+                if (index === correctAnswerIndex) {
+                    button.classList.add('correct');
+                } else if (index === selectedOptionIndex) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            if (selectedOptionIndex === correctAnswerIndex) {
                 score++;
-                quizOptionButtons[selectedIndex].classList.add('correct');
-            } else {
-                quizOptionButtons[selectedIndex].classList.add('incorrect');
-                quizOptionButtons[questionData.correctAnswerIndex].classList.add('correct'); // সঠিক উত্তরটি দেখান
             }
             updateScore();
-            disableOptions();
-            quizNextButton.classList.remove('hidden'); // নেক্সট বাটন দেখান
-            quizNextButton.disabled = false; // নেক্সট বাটন এনাবল করুন
+            quizNextButton.classList.remove('hidden'); // পরবর্তী প্রশ্ন বাটন দেখানো
+            quizNextButton.disabled = false; // পরবর্তী প্রশ্ন বাটন সক্রিয় করা
         }
 
-        // অপশনগুলো ডিজেবল করার ফাংশন
-        function disableOptions() {
-            quizOptionButtons.forEach(button => {
-                button.disabled = true;
-            });
-        }
-
-        // স্কোর আপডেট করার ফাংশন
-        function updateScore() {
-            quizScoreDisplay.textContent = `স্কোর: ${score}`;
-        }
-
-        // পরবর্তী প্রশ্নে যাওয়ার ফাংশন
         function nextQuestion() {
             currentQuestionIndex++;
+            quizNextButton.classList.add('hidden'); // পরবর্তী প্রশ্ন বাটন লুকানো
             if (currentQuestionIndex < quizQuestions.length) {
-                displayQuestion();
+                loadQuestion();
             } else {
                 endQuiz();
             }
         }
 
-        // কুইজ শেষ করার ফাংশন
+        function updateScore() {
+            quizScoreDisplay.textContent = `স্কোর: ${score}/${quizQuestions.length}`;
+        }
+
         function endQuiz() {
-            quizQuestion.textContent = `কুইজ শেষ! আপনার মোট স্কোর: ${score} / ${quizQuestions.length}`;
-            quizOptionsContainer.classList.add('hidden'); // অপশন লুকান
-            quizNextButton.classList.add('hidden'); // নেক্সট বাটন লুকান
-            quizQuitButton.classList.add('hidden'); // কুইট বাটন লুকান
+            quizActive = false;
+            quizQuestion.textContent = "কুইজ শেষ!";
+            quizOptions.innerHTML = `<p class="text-center text-lg font-semibold">আপনার মোট স্কোর: ${score} এর মধ্যে ${quizQuestions.length}</p>`;
+            quizNextButton.classList.add('hidden');
+            quizQuitButton.classList.add('hidden'); // কুইজ শেষ হলে কুইট বাটন লুকানো
             quizStartButton.textContent = "আবার শুরু করুন";
-            quizStartButton.classList.remove('hidden'); // স্টার্ট বাটন দেখান
-            quizScoreDisplay.classList.add('hidden'); // স্কোর লুকান
-            quizContent.classList.add('hidden'); // কুইজের বিষয়বস্তু লুকান
-            quizStartButton.onclick = () => { // আবার শুরু করার জন্য ইভেন্ট লিসেনার সেট করুন
-                quizOptionsContainer.classList.remove('hidden');
-                quizScoreDisplay.classList.remove('hidden');
-                startQuiz();
-            };
+            quizStartButton.classList.remove('hidden');
         }
 
-        // কুইজ থেকে বের হওয়ার ফাংশন
         function quitQuiz() {
-            quizStarted = false;
-            quizContent.classList.add('hidden'); // কুইজের বিষয়বস্তু লুকান
-            quizStartButton.classList.remove('hidden'); // স্টার্ট বাটন দেখান
-            quizQuitButton.classList.add('hidden'); // কুইট বাটন লুকান
-            quizNextButton.classList.add('hidden'); // নেক্সট বাটন লুকান (যদি দৃশ্যমান থাকে)
-            quizScoreDisplay.classList.add('hidden'); // স্কোর লুকান
-            quizQuestion.textContent = "প্রশ্ন এখানে থাকবে..."; // প্রশ্ন রিসেট করুন
-            quizStartButton.textContent = "Quiz From Tawsif"; // বাটন টেক্সট রিসেট করুন
+            quizActive = false;
+            quizContent.classList.add('hidden');
+            quizStartButton.textContent = "Quiz From Tawsif"; // টেক্সট রিসেট
+            quizStartButton.classList.remove('hidden');
+            quizQuitButton.classList.add('hidden'); // কুইট বাটন লুকানো
+            quizOptions.innerHTML = ''; // অপশনগুলো পরিষ্কার করা
+            quizQuestion.textContent = ''; // প্রশ্ন পরিষ্কার করা
+            quizScoreDisplay.textContent = 'স্কোর: 0'; // স্কোর রিসেট
         }
 
-        // ইভেন্ট লিসেনার সেট করুন
         quizStartButton.addEventListener('click', startQuiz);
         quizNextButton.addEventListener('click', nextQuestion);
-        quizQuitButton.addEventListener('click', quitQuiz); // কুইট বাটনের ইভেন্ট লিসেনার
+        quizQuitButton.addEventListener('click', quitQuiz); // কুইট বাটনে ইভেন্ট লিসেনার যোগ করা হয়েছে
 
-        // প্রাথমিক সেটআপ
-        initializeClockOffsets();
-        runClocks();
-        animateTextCycle();
-        window.addEventListener('resize', initializeClockOffsets);
+        // প্রাথমিক লোড
+        document.addEventListener('DOMContentLoaded', () => {
+            animateTextCycle();
+            runClocks();
+            initializeClockOffsets(); // ঘড়ির প্রাথমিক অবস্থান সেট করা
+            showClock(currentClockTypeIndex); // প্রথম ঘড়ি দেখানো
+        });
+
+        // উইন্ডো রিসাইজ হলে ঘড়ির অবস্থান পুনরায় সেট করা
+        window.addEventListener('resize', () => {
+            initializeClockOffsets();
+            showClock(currentClockTypeIndex); // বর্তমান ঘড়িটি পুনরায় পজিশন করা
+        });
+
     </script>
 </body>
 </html>
