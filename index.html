@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আপনার ওয়েবসাইট</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom styles for Inter font and general body styling -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('hello.jpg'); /* hello.jpg ইমেজটি যোগ করা হয়েছে */
+            background-size: cover; /* পুরো ব্যাকগ্রাউন্ড কভার করবে */
+            background-position: center; /* ইমেজটি মাঝখানে থাকবে */
+            background-repeat: no-repeat; /* ইমেজ পুনরাবৃত্তি হবে না */
+            background-attachment: fixed; /* স্ক্রল করার সময় ইমেজ স্থির থাকবে */
+            color: #334155; /* গাঢ় ধূসর টেক্সট */
+            overflow-x: hidden; /* অনুভূমিক স্ক্রলিং প্রতিরোধ */
+            min-height: 100vh; /* নিশ্চিত করে যে বডি অন্তত ভিউপোর্ট উচ্চতার সমান */
+        }
+        /* নেভিগেশন লিংকের জন্য ট্রানজিশন, শ্যাডো, স্কেল এবং উজ্জ্বলতার প্রভাব */
+        .nav-link {
+            transition: all 0.3s ease-in-out;
+            display: flex; /* আইকন এবং টেক্সট সারিবদ্ধ করার জন্য */
+            align-items: center; /* উল্লম্বভাবে সারিবদ্ধ করার জন্য */
+            justify-content: flex-start; /* অনুভূমিকভাবে বাম দিকে সারিবদ্ধ করার জন্য */
+            padding: 12px 20px; /* প্যাডিং বাড়ানো হলো */
+            gap: 10px; /* আইকন এবং টেক্সটের মধ্যে ব্যবধান */
+            width: 100%; /* সম্পূর্ণ প্রস্থ ব্যবহার করবে */
+        }
+        .nav-link:hover {
+            transform: translateY(-3px) scale(1.02); /* আরও স্পষ্ট প্রভাব */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* আরও শক্তিশালী শ্যাডো */
+            filter: brightness(1.1); /* সূক্ষ্ম উজ্জ্বলতা বৃদ্ধি */
+        }
+
+        /* মেনু কন্টেইনারের জন্য কাস্টম স্টাইল */
+        #main-menu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%); /* প্রাথমিকভাবে লুকানো */
+            background: linear-gradient(135deg, #333333 0%, #000000 100%); /* গাঢ় ধূসর থেকে কালো গ্রেডিয়েন্ট */
+            position: fixed;
+        }
+        #main-menu.open {
+            transform: translateX(0); /* দেখা যাবে */
+        }
+
+        /* ওভারলে স্টাইল */
+        #menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* রিসাইজিং হ্যান্ডেলের স্টাইল */
+        #resize-handle {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(0, 0, 0, 0.1);
+            cursor: ns-resize;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 60;
+        }
+        #resize-handle:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* টাইপিং টেক্সট প্রদর্শনের জন্য */
+        #dynamic-text-display {
+            overflow: hidden;
+            white-space: nowrap;
+            display: inline-block;
+            letter-spacing: .15em;
+            vertical-align: middle;
+        }
+
+        /* ব্লিঙ্কিং কার্সারের জন্য */
+        #typing-cursor {
+            border-right: .15em solid orange;
+            animation: blink-caret .75s step-end infinite;
+            display: inline-block;
+            vertical-align: middle;
+            height: 1.2em;
+        }
+
+        /* কার্সার ব্লিঙ্ক অ্যানিমেশন */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange; }
+        }
+
+        /* মেনু বাটন আইকনের অ্যানিমেশন */
+        #menu-button.active svg {
+            transform: rotate(90deg);
+            transition: transform 0.3s ease-in-out;
+        }
+        #menu-button svg {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* ঘড়ির কন্টেইনারের সাধারণ স্টাইল */
+        .clock-container {
+            position: absolute; /* ড্র্যাগ করার জন্য absolute পজিশন */
+            cursor: grab; /* ডিফল্ট কার্সার গ্র্যাব মোডে */
+            user-select: none; /* টেক্সট সিলেকশন প্রতিরোধ */
+            /* top, left, এবং transform প্রপার্টিগুলো জাভাস্ক্রিপ্ট দ্বারা নিয়ন্ত্রণ করা হবে */
+            touch-action: none; /* টাচ ইভেন্টের জন্য ডিফল্ট ব্রাউজার অ্যাকশন অক্ষম করুন */
+            z-index: 20; /* মেনুর নিচে কিন্তু অন্যান্য কন্টেন্টের উপরে */
+            transition: transform 0.1s ease-out; /* স্মুথ ড্র্যাগিং */
+            display: flex; /* ঘড়ি এবং বাটনকে ফ্লেক্সবক্সের মাধ্যমে সাজানোর জন্য */
+            flex-direction: column; /* উল্লম্বভাবে সাজানোর জন্য */
+            align-items: center; /* মাঝখানে সাজানোর জন্য */
+            justify-content: center; /* মাঝখানে সাজানোর জন্য */
+        }
+
+        /* অ্যানালগ ঘড়ির স্টাইল */
+        .analog-clock {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #e0f2f7 0%, #b3e5fc 100%); /* হালকা নীল গ্রেডিয়েন্ট */
+            border: 10px solid #2196f3; /* নীল বর্ডার */
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(0, 0, 0, 0.15); /* আরও স্পষ্ট শ্যাডো */
+            margin-bottom: 10px;
+        }
+        .analog-clock::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #2196f3; /* নীল কেন্দ্রবিন্দু */
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .hour, .minute, .second {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background-color: #4a5568;
+            border-radius: 5px;
+        }
+        .hour {
+            width: 8px;
+            height: 80px;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 7;
+            background-color: #333; /* ঘন্টার কাঁটা গাঢ় ধূসর */
+        }
+        .minute {
+            width: 6px;
+            height: 110px;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 8;
+            background-color: #555; /* মিনিটের কাঁটা মাঝারি ধূসর */
+        }
+        .second {
+            width: 3px;
+            height: 120px;
+            background-color: #f44336; /* সেকেন্ডের কাঁটা লাল */
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 9;
+        }
+
+        /* ডিজিটাল ঘড়ির স্টাইল */
+        .digital-clock {
+            width: 300px;
+            height: 150px;
+            background: linear-gradient(135deg, #1a202c 0%, #000000 100%); /* গাঢ় ধূসর থেকে কালো গ্রেডিয়েন্ট */
+            color: #00ff00; /* সবুজ রঙের অক্ষর */
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.1); /* আরও স্পষ্ট শ্যাডো ও ইনসেট শ্যাডো */
+            padding: 10px;
+            border: 5px solid #00c853; /* সবুজ বর্ডার */
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px rgba(0,255,0,0.7); /* টেক্সট শ্যাডো */
+        }
+
+        /* মিনিমালিস্ট ডিজিটাল ঘড়ির স্টাইল */
+        .minimalist-digital-clock {
+            width: 250px; /* কিছুটা ছোট */
+            height: 100px;
+            background-color: #f0f0f0; /* হালকা ধূসর ব্যাকগ্রাউন্ড */
+            color: #333; /* গাঢ় টেক্সট */
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: 600; /* সেমি-বোল্ড */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 5px 15px;
+            border: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .minimalist-digital-clock span {
+            /* টেক্সটকে আলাদা করার জন্য সামান্য মার্জিন */
+            margin: 0 5px;
+        }
+
+        /* টগল বাটনের স্টাইল */
+        #toggle-clock-button-analog, #toggle-clock-button-digital, #toggle-clock-button-minimalist {
+            background-color: #2196f3; /* নীল বাটন */
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #toggle-clock-button-analog:hover, #toggle-clock-button-digital:hover, #toggle-clock-button-minimalist:hover {
+            background-color: #1976d2; /* হোভারে গাঢ় নীল */
+            transform: translateY(-2px); /* হোভারে হালকা উপরে উঠবে */
+        }
+
+        /* কুইজ কন্টেইনারের স্টাইল */
+        #quiz-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px; /* কুইজ বক্সের প্রস্থ */
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100; /* নিশ্চিত করুন এটি অন্যান্য উপাদানের উপরে থাকে */
+            border: 2px solid #a0aec0; /* হালকা ধূসর বর্ডার */
+        }
+
+        #quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .quiz-option-button {
+            background-color: #edf2f7; /* হালকা ব্যাকগ্রাউন্ড */
+            color: #2d3748;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-size: 0.95rem;
+            border: 1px solid #cbd5e0;
+            width: 100%; /* সম্পূর্ণ প্রস্থ জুড়ে */
+        }
+
+        .quiz-option-button:hover:not(:disabled) {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .quiz-option-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .quiz-option-button.correct {
+            background-color: #48bb78; /* সবুজ */
+            color: white;
+            border-color: #38a169;
+        }
+
+        .quiz-option-button.incorrect {
+            background-color: #ef4444; /* লাল */
+            color: white;
+            border-color: #dc2626;
+        }
+
+        #quiz-next-button, #quiz-start-button, #quiz-quit-button { /* #quiz-quit-button যোগ করা হয়েছে */
+            background-color: #4299e1; /* নীল */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            align-self: flex-end; /* ডানদিকে সারিবদ্ধ */
+        }
+
+        #quiz-next-button:hover:not(:disabled), #quiz-start-button:hover:not(:disabled), #quiz-quit-button:hover:not(:disabled) {
+            background-color: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        #quiz-next-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #quiz-quit-button { /* কুইট বাটনের জন্য আলাদা স্টাইল */
+            background-color: #f56565; /* লালচে রঙ */
+            align-self: flex-start; /* বাম দিকে সারিবদ্ধ */
+        }
+
+        #quiz-quit-button:hover {
+            background-color: #e53e3e;
+        }
+
+        #quiz-score {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4a5568;
+            text-align: right; /* স্কোর ডানদিকে */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header / Navigation Bar -->
+    <header id="main-header" class="bg-gray-800 shadow-lg p-4 md:p-6 sticky top-0 z-50 relative" style="min-height: 80px;">
+        <nav class="container mx-auto flex justify-between items-center h-full">
+            <!-- লোগো বা সাইটের নাম -->
+            <div class="text-2xl md:text-3xl font-extrabold text-white">
+                <span id="dynamic-text-display"></span>
+                <span id="typing-cursor"></span>
+            </div>
+
+            <!-- মেনু বাটন (সবসময় দৃশ্যমান) -->
+            <button id="menu-button" class="p-2 rounded-md text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </nav>
+        <!-- রিসাইজিং হ্যান্ডেল -->
+        <div id="resize-handle"></div>
+    </header>
+
+    <!-- অ্যানালগ ঘড়ি -->
+    <div id="analog-clock-container" class="clock-container">
+        <div class="analog-clock">
+            <!-- প্রতিটি ঘণ্টার জন্য ডট বা মার্কার -->
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full">
+                <!-- 12 টা -->
+                <div class="absolute top-0 left-1/2 -ml-1 w-2 h-4 bg-gray-600 rounded-b-full"></div>
+                <!-- 3 টা -->
+                <div class="absolute top-1/2 right-0 -mt-2 w-4 h-2 bg-gray-600 rounded-l-full"></div>
+                <!-- 6 টা -->
+                <div class="absolute bottom-0 left-1/2 -ml-1 w-2 h-4 bg-gray-600 rounded-t-full"></div>
+                <!-- 9 টা -->
+                <div class="absolute top-1/2 left-0 -mt-2 w-4 h-2 bg-gray-600 rounded-r-full"></div>
+
+                <!-- অন্যান্য ঘণ্টা মার্কার (ছোট ডট) -->
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 15%; left: 75%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 75%; left: 85%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 85%; left: 25%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 25%; left: 15%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 5%; left: 25%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 5%; left: 75%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 95%; left: 75%; transform: translate(-50%, -50%);"></div>
+                <div class="absolute w-2 h-2 bg-gray-400 rounded-full" style="top: 95%; left: 25%; transform: translate(-50%, -50%);"></div>
+            </div>
+
+            <div class="hour" id="hour-hand"></div>
+            <div class="minute" id="minute-hand"></div>
+            <div class="second" id="second-hand"></div>
+        </div>
+        <!-- টগল বাটন ঘড়ির ভেতরে -->
+        <button id="toggle-clock-button-analog" class="p-2 rounded-md text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 mt-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- ডিজিটাল ঘড়ি -->
+    <div id="digital-clock-container" class="clock-container hidden">
+        <div class="digital-clock">
+            <span id="digital-hour">00</span>:<span id="digital-minute">00</span>:<span id="digital-second">00</span>
+        </div>
+        <!-- টগল বাটন ঘড়ির ভেতরে -->
+        <button id="toggle-clock-button-digital" class="p-2 rounded-md text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 mt-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- মিনিমালিস্ট ডিজিটাল ঘড়ি -->
+    <div id="minimalist-digital-clock-container" class="clock-container hidden">
+        <div class="minimalist-digital-clock">
+            <span id="minimalist-digital-time">00:00:00</span>
+        </div>
+        <button id="toggle-clock-button-minimalist" class="p-2 rounded-md text-gray-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 mt-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </button>
+    </div>
+
+
+    <!-- মেনু কন্টেইনার (সবসময় সাইডবার হিসেবে) -->
+    <div id="main-menu" class="fixed top-0 left-0 h-full w-64 shadow-xl z-40 p-6 flex flex-col space-y-4">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">মেনু</h3>
+            <button id="close-menu-button" class="p-2 rounded-md text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <a href="inverter.html" class="nav-link bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg shadow-md">
+            <span class="text-xl">📄</span> PDF EDITOR
+        </a>
+        <a href="#" class="nav-link bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md">
+            <span class="text-xl">🎮</span> GAMES
+        </a>
+        <a href="#" class="nav-link bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow-md">
+            <span class="text-xl">🧮</span> CALCULATOR
+        </a>
+        <a href="Studytiming.html" class="nav-link bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg shadow-md">
+            <span class="text-xl">📚</span> STUDY
+        </a>
+    </div>
+
+    <!-- মেনু ওভারলে -->
+    <div id="menu-overlay"></div>
+
+    <!-- কুইজ কন্টেইনার -->
+    <div id="quiz-container">
+        <h4 class="text-lg font-bold text-gray-800">সাধারণ জ্ঞান কুইজ</h4>
+        <!-- কুইজের প্রশ্ন এবং অপশন প্রাথমিকভাবে লুকানো থাকবে -->
+        <div id="quiz-content" class="hidden flex-col gap-3">
+            <p id="quiz-question">প্রশ্ন এখানে থাকবে...</p>
+            <div id="quiz-options" class="flex flex-col gap-2">
+                <button class="quiz-option-button" data-option-index="0"></button>
+                <button class="quiz-option-button" data-option-index="1"></button>
+                <button class="quiz-option-button" data-option-index="2"></button>
+                <button class="quiz-option-button" data-option-index="3"></button>
+            </div>
+            <p id="quiz-score" class="mt-2">স্কোর: 0</p>
+            <div class="flex justify-between items-center w-full">
+                <button id="quiz-quit-button" class="hidden">কুইজ থেকে বের হন</button> <!-- কুইট বাটন যোগ করা হয়েছে -->
+                <button id="quiz-next-button" class="hidden">পরবর্তী প্রশ্ন</button>
+            </div>
+        </div>
+        <!-- কুইজ স্টার্ট বাটন, 'hidden' ক্লাস সরানো হয়েছে এবং টেক্সট পরিবর্তন করা হয়েছে -->
+        <button id="quiz-start-button">Quiz From Tawsif</button>
+    </div>
+
+    <script>
+        // ওয়েবসাইট ইন্টারফেসের জন্য জাভাস্ক্রিপ্ট
+        const menuButton = document.getElementById('menu-button');
+        const mainMenu = document.getElementById('main-menu');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const menuOverlay = document.getElementById('menu-overlay');
+        const mainHeader = document.getElementById('main-header');
+        const resizeHandle = document.getElementById('resize-handle');
+
+        const dynamicTextDisplay = document.getElementById('dynamic-text-display');
+        const typingCursor = document.getElementById('typing-cursor');
+
+        const rotatingTexts = [
+            {
+                fullText: "TAWSIF WEBSITE",
+                parts: [
+                    { text: "TAWSIF", color: "orange-500" },
+                    { text: " WEBSITE", color: "green-500" }
+                ]
+            },
+            {
+                fullText: "Welcome to Editing website",
+                parts: [
+                    { text: "Welcome", color: "blue-400" },
+                    { text: " to Editing website", color: "purple-400" }
+                ]
+            },
+            {
+                fullText: "Welcome to Games Website",
+                parts: [
+                    { text: "Welcome", color: "red-400" },
+                    { text: " to Games Website", color: "yellow-400" }
+                ]
+            },
+            {
+                fullText: "Welcome to study website",
+                parts: [
+                    { text: "Welcome", color: "pink-400" },
+                    { text: " to study website", color: "cyan-400" }
+                ]
+            },
+            {
+                fullText: "Make a fun",
+                parts: [
+                    { text: "Make", color: "indigo-400" },
+                    { text: " a fun", color: "teal-400" }
+                ]
+            },
+            {
+                fullText: "Creative Designe",
+                parts: [
+                    { text: "Creative", color: "lime-400" },
+                    { text: " Designe", color: "fuchsia-400" }
+                ]
+            },
+            {
+                fullText: "Lot of page&options",
+                parts: [
+                    { text: "Lot", color: "rose-400" },
+                    { text: " of page&options", color: "emerald-400" }
+                ]
+            },
+            {
+                fullText: "MAke jocks",
+                parts: [
+                    { text: "MAke", color: "amber-400" },
+                    { text: " jocks", color: "sky-400" }
+                ]
+            }
+        ];
+
+        let textIndex = 0;
+        const typingSpeedPerChar = 100;
+        const eraseSpeedPerChar = 50;
+        const displayPause = 1000;
+        const cycleGap = 700;
+
+        let isResizing = false;
+        let initialY;
+        let initialHeight;
+
+        // মেনু টগল করার ফাংশন
+        function toggleMenu() {
+            mainMenu.classList.toggle('open');
+            menuOverlay.classList.toggle('open');
+            menuButton.classList.toggle('active');
+        }
+
+        menuButton.addEventListener('click', toggleMenu);
+        closeMenuButton.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+
+        // রিসাইজিং হ্যান্ডেলের জন্য ইভেন্ট লিসেনার
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            initialY = e.clientY;
+            initialHeight = mainHeader.offsetHeight;
+            document.body.style.cursor = 'ns-resize';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+
+            const dy = e.clientY - initialY;
+            let newHeight = initialHeight + dy;
+
+            const minHeight = 80;
+            const maxHeight = window.innerHeight * 0.8;
+
+            if (newHeight < minHeight) {
+                newHeight = minHeight;
+            } else if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+            }
+
+            mainHeader.style.height = `${newHeight}px`;
+            mainHeader.style.padding = '0';
+            mainHeader.style.overflow = 'hidden';
+
+            const nav = mainHeader.querySelector('nav');
+            if (nav) {
+                nav.style.height = '100%';
+                nav.style.display = 'flex';
+                nav.style.alignItems = 'center';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isResizing = false;
+            document.body.style.cursor = 'default';
+            mainHeader.style.paddingTop = '1rem';
+            mainHeader.style.paddingBottom = '1rem';
+            mainHeader.style.minHeight = '80px';
+            mainHeader.style.overflow = '';
+            
+            const nav = mainHeader.querySelector('nav');
+            if (nav) {
+                nav.style.height = '';
+                nav.style.display = '';
+                nav.style.alignItems = '';
+            }
+        });
+
+        // টাইপিং অ্যানিমেশন শুরু করার ফাংশন
+        function animateTextCycle() {
+            const currentTextData = rotatingTexts[textIndex];
+            let typedCharCount = 0;
+            let currentDisplayHtml = '';
+
+            const typeChar = () => {
+                if (typedCharCount < currentTextData.fullText.length) {
+                    currentDisplayHtml = '';
+                    let tempTextToType = currentTextData.fullText.substring(0, typedCharCount + 1);
+                    let tempProcessedLength = 0;
+
+                    currentTextData.parts.forEach(part => {
+                        const partTextLength = part.text.length;
+                        if (tempProcessedLength < tempTextToType.length) {
+                            const charsToTake = Math.min(partTextLength, tempTextToType.length - tempProcessedLength);
+                            currentDisplayHtml += `<span class="text-${part.color}">${part.text.substring(0, charsToTake)}</span>`;
+                            tempProcessedLength += charsToTake;
+                        }
+                    });
+
+                    dynamicTextDisplay.innerHTML = currentDisplayHtml;
+                    typedCharCount++;
+                    setTimeout(typeChar, typingSpeedPerChar);
+                } else {
+                    setTimeout(() => {
+                        eraseChar();
+                    }, displayPause);
+                }
+            };
+
+            let erasedCharCount = 0;
+            const eraseChar = () => {
+                if (erasedCharCount < currentTextData.fullText.length) {
+                    currentDisplayHtml = '';
+                    let remainingTextLength = currentTextData.fullText.length - erasedCharCount - 1;
+                    
+                    let partIndex = 0;
+                    let charsRendered = 0;
+                    while (partIndex < currentTextData.parts.length) {
+                        const part = rotatingTexts[textIndex].parts[partIndex];
+                        const partLength = part.text.length;
+                        if (charsRendered + partLength > remainingTextLength) {
+                            const charsToShowInThisPart = remainingTextLength - charsRendered;
+                            currentDisplayHtml += `<span class="text-${part.color}">${part.text.substring(0, charsToShowInThisPart)}</span>`;
+                            break;
+                        } else {
+                            currentDisplayHtml += `<span class="text-${part.color}">${part.text}</span>`;
+                            charsRendered += partLength;
+                        }
+                        partIndex++;
+                    }
+                    dynamicTextDisplay.innerHTML = currentDisplayHtml;
+                    erasedCharCount++;
+                    setTimeout(eraseChar, eraseSpeedPerChar);
+                } else {
+                    textIndex = (textIndex + 1) % rotatingTexts.length;
+                    setTimeout(animateTextCycle, cycleGap);
+                }
+            };
+
+            typeChar();
+        }
+
+        // ঘড়ির জন্য জাভাস্ক্রিপ্ট
+        const analogHourHand = document.getElementById('hour-hand');
+        const analogMinuteHand = document.getElementById('minute-hand');
+        const analogSecondHand = document.getElementById('second-hand');
+        const analogClockContainer = document.getElementById('analog-clock-container');
+
+        const digitalHour = document.getElementById('digital-hour');
+        const digitalMinute = document.getElementById('digital-minute');
+        const digitalSecond = document.getElementById('digital-second');
+        const digitalClockContainer = document.getElementById('digital-clock-container');
+
+        const minimalistDigitalTime = document.getElementById('minimalist-digital-time');
+        const minimalistDigitalClockContainer = document.getElementById('minimalist-digital-clock-container');
+
+        const toggleClockButtonAnalog = document.getElementById('toggle-clock-button-analog');
+        const toggleClockButtonDigital = document.getElementById('toggle-clock-button-digital');
+        const toggleClockButtonMinimalist = document.getElementById('toggle-clock-button-minimalist');
+
+        let currentClockTypeIndex = 0;
+        const clockContainers = [analogClockContainer, digitalClockContainer, minimalistDigitalClockContainer];
+
+        let clockOffsets = {
+            analog: { x: 0, y: 0 },
+            digital: { x: 0, y: 0 },
+            minimalist: { x: 0, y: 0 }
+        };
+
+        let clockIsDragging = false;
+        let clockInitialX;
+        let clockInitialY;
+        let currentDraggedClockElement = null;
+
+        function updateAnalogClock() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours();
+
+            const secondDeg = (seconds * 6) + (now.getMilliseconds() * 0.006);
+            const minuteDeg = (minutes * 6) + (seconds * 0.1);
+            const hourDeg = (hours % 12 * 30) + (minutes * 0.5);
+
+            analogSecondHand.style.transform = `translate(-50%, -100%) rotate(${secondDeg}deg)`;
+            analogMinuteHand.style.transform = `translate(-50%, -100%) rotate(${minuteDeg}deg)`;
+            analogHourHand.style.transform = `translate(-50%, -100%) rotate(${hourDeg}deg)`;
+        }
+
+        function updateDigitalClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            digitalHour.textContent = hours;
+            digitalMinute.textContent = minutes;
+            digitalSecond.textContent = seconds;
+        }
+
+        function updateMinimalistDigitalClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            minimalistDigitalTime.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function runClocks() {
+            updateAnalogClock();
+            updateDigitalClock();
+            updateMinimalistDigitalClock();
+            requestAnimationFrame(runClocks);
+        }
+
+        function initializeClockOffsets() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            const getCenteredOffsets = (width, height, buttonHeight = 0) => {
+                const totalHeight = height + buttonHeight + 10;
+                // Initially center the entire clock-container (clock + button)
+                return {
+                    x: (viewportWidth / 2) - (width / 2),
+                    y: (viewportHeight / 2) - (totalHeight / 2)
+                };
+            };
+
+            const commonButtonHeight = 48; // আনুমানিক বাটন উচ্চতা
+
+            // Analog clock dimensions
+            const analogWidth = 300;
+            const analogHeight = 300;
+            const analogCentered = getCenteredOffsets(analogWidth, analogHeight, commonButtonHeight);
+            clockOffsets.analog.x = analogCentered.x;
+            clockOffsets.analog.y = analogCentered.y;
+            setTranslate(clockOffsets.analog.x, clockOffsets.analog.y, analogClockContainer);
+
+            // Digital clock dimensions
+            const digitalWidth = 300;
+            const digitalHeight = 150;
+            const digitalCentered = getCenteredOffsets(digitalWidth, digitalHeight, commonButtonHeight);
+            clockOffsets.digital.x = digitalCentered.x;
+            clockOffsets.digital.y = digitalCentered.y;
+
+            // Minimalist Digital clock dimensions
+            const minimalistWidth = 250;
+            const minimalistHeight = 100;
+            const minimalistCentered = getCenteredOffsets(minimalistWidth, minimalistHeight, commonButtonHeight);
+            clockOffsets.minimalist.x = minimalistCentered.x;
+            clockOffsets.minimalist.y = minimalistCentered.y;
+        }
+
+        function toggleClocks() {
+            const currentClockContainer = clockContainers[currentClockTypeIndex];
+            const currentStyle = window.getComputedStyle(currentClockContainer);
+            
+            let currentX = parseFloat(currentStyle.left);
+            let currentY = parseFloat(currentStyle.top);
+
+            if (isNaN(currentX)) currentX = 0;
+            if (isNaN(currentY)) currentY = 0;
+
+            if (currentClockTypeIndex === 0) { // analog
+                clockOffsets.analog.x = currentX;
+                clockOffsets.analog.y = currentY;
+            } else if (currentClockTypeIndex === 1) { // digital
+                clockOffsets.digital.x = currentX;
+                clockOffsets.digital.y = currentY;
+            } else if (currentClockTypeIndex === 2) { // minimalist
+                clockOffsets.minimalist.x = currentX;
+                clockOffsets.minimalist.y = currentY;
+            }
+
+            currentClockContainer.classList.add('hidden');
+
+            currentClockTypeIndex = (currentClockTypeIndex + 1) % clockContainers.length;
+            const nextClockContainer = clockContainers[currentClockTypeIndex];
+
+            if (currentClockTypeIndex === 0) { // analog
+                setTranslate(clockOffsets.analog.x, clockOffsets.analog.y, nextClockContainer);
+            } else if (currentClockTypeIndex === 1) { // digital
+                setTranslate(clockOffsets.digital.x, clockOffsets.digital.y, nextClockContainer);
+            } else if (currentClockTypeIndex === 2) { // minimalist
+                setTranslate(clockOffsets.minimalist.x, clockOffsets.minimalist.y, nextClockContainer);
+            }
+            nextClockContainer.classList.remove('hidden');
+        }
+
+        toggleClockButtonAnalog.addEventListener('click', toggleClocks);
+        toggleClockButtonDigital.addEventListener('click', toggleClocks);
+        toggleClockButtonMinimalist.addEventListener('click', toggleClocks);
+
+        // ড্র্যাগিং ফাংশনালিটি (যে ক্লকটি অ্যাকটিভ আছে তার জন্য)
+        analogClockContainer.addEventListener('mousedown', dragStartClock);
+        analogClockContainer.addEventListener('touchstart', dragStartClock);
+        digitalClockContainer.addEventListener('mousedown', dragStartClock);
+        digitalClockContainer.addEventListener('touchstart', dragStartClock);
+        minimalistDigitalClockContainer.addEventListener('mousedown', dragStartClock);
+        minimalistDigitalClockContainer.addEventListener('touchstart', dragStartClock);
+
+        function dragStartClock(e) {
+            // Check if the click originated from a toggle button to prevent dragging when toggling
+            const target = e.target;
+            if (target === toggleClockButtonAnalog || target === toggleClockButtonDigital || target === toggleClockButtonMinimalist ||
+                toggleClockButtonAnalog.contains(target) || toggleClockButtonDigital.contains(target) || toggleClockButtonMinimalist.contains(target)) {
+                return;
+            }
+
+            currentDraggedClockElement = this; // Store the reference to the element being dragged
+
+            let clientX, clientY;
+            if (e.type === "touchstart") {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const style = window.getComputedStyle(currentDraggedClockElement);
+            const currentLeft = parseFloat(style.left) || 0;
+            const currentTop = parseFloat(style.top) || 0;
+
+            clockInitialX = clientX - currentLeft;
+            clockInitialY = clientY - currentTop;
+
+            clockIsDragging = true;
+            currentDraggedClockElement.style.cursor = 'grabbing';
+        }
+
+        document.addEventListener('mousemove', dragClock);
+        document.addEventListener('touchmove', dragClock);
+
+        function dragClock(e) {
+            if (!clockIsDragging || !currentDraggedClockElement) return; // Ensure element is defined
+            e.preventDefault();
+
+            let clientX, clientY;
+            if (e.type === "touchmove") {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const newX = clientX - clockInitialX;
+            const newY = clientY - clockInitialY;
+
+            // Update the stored offsets for the *currently dragged* clock and apply
+            const activeClockIndex = clockContainers.indexOf(currentDraggedClockElement);
+            if (activeClockIndex === 0) {
+                clockOffsets.analog.x = newX;
+                clockOffsets.analog.y = newY;
+            } else if (activeClockIndex === 1) {
+                clockOffsets.digital.x = newX;
+                clockOffsets.digital.y = newY;
+            } else if (activeClockIndex === 2) {
+                clockOffsets.minimalist.x = newX;
+                clockOffsets.minimalist.y = newY;
+            }
+            
+            setTranslate(newX, newY, currentDraggedClockElement);
+        }
+
+        document.addEventListener('mouseup', dragEndClock);
+        document.addEventListener('touchend', dragEndClock);
+
+        function dragEndClock() {
+            if (!currentDraggedClockElement) return; // Ensure element is defined
+            clockIsDragging = false;
+            currentDraggedClockElement.style.cursor = 'grab';
+            currentDraggedClockElement = null; // Reset the reference after drag ends
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.left = `${xPos}px`;
+            el.style.top = `${yPos}px`;
+            el.style.transform = `none`; // Remove any conflicting transforms
+        }
+
+        // কুইজ জাভাস্ক্রিপ্ট
+        const quizQuestions = [
+            {
+                question: "বাংলাদেশের রাজধানীর নাম কি?",
+                options: ["ঢাকা", "চট্টগ্রাম", "খুলনা", "সিলেট"],
+                correctAnswerIndex: 0
+            },
+            {
+                question: "পৃথিবীর বৃহত্তম মহাসাগর কোনটি?",
+                options: ["আটলান্টিক মহাসাগর", "ভারত মহাসাগর", "প্রশান্ত মহাসাগর", "আর্কটিক মহাসাগর"],
+                correctAnswerIndex: 2
+            },
+            {
+                question: "সূর্য কি?",
+                options: ["গ্রহ", "তারা", "উপগ্রহ", "উল্কাপিণ্ড"],
+                correctAnswerIndex: 1
+            },
+            {
+                question: "কোন প্রাণীটি ডিম পাড়ে না?",
+                options: ["সাপ", "পাখি", "গরু", "মাছ"],
+                correctAnswerIndex: 2
+            },
+            {
+                question: "মুক্তিযুদ্ধের সময় বাংলাদেশের অস্থায়ী সরকারের প্রধানমন্ত্রী কে ছিলেন?",
+                options: ["বঙ্গবন্ধু শেখ মুজিবুর রহমান", "তাজউদ্দীন আহমদ", "সৈয়দ নজরুল ইসলাম", "এম মনসুর আলী"],
+                correctAnswerIndex: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizStarted = false;
+
+        const quizContainer = document.getElementById('quiz-container');
+        const quizContent = document.getElementById('quiz-content');
+        const quizQuestion = document.getElementById('quiz-question');
+        const quizOptionsContainer = document.getElementById('quiz-options');
+        const quizOptionButtons = quizOptionsContainer.querySelectorAll('.quiz-option-button');
+        const quizScoreDisplay = document.getElementById('quiz-score');
+        const quizNextButton = document.getElementById('quiz-next-button');
+        const quizStartButton = document.getElementById('quiz-start-button');
+        const quizQuitButton = document.getElementById('quiz-quit-button'); // কুইট বাটনের রেফারেন্স
+
+        // কুইজ শুরু করার ফাংশন
+        function startQuiz() {
+            quizStarted = true;
+            currentQuestionIndex = 0;
+            score = 0;
+            quizStartButton.classList.add('hidden'); // স্টার্ট বাটন লুকান
+            quizContent.classList.remove('hidden'); // কুইজের বিষয়বস্তু দৃশ্যমান করুন
+            quizScoreDisplay.classList.remove('hidden'); // স্কোর দৃশ্যমান করুন
+            quizQuitButton.classList.remove('hidden'); // কুইট বাটন দৃশ্যমান করুন
+            displayQuestion();
+            updateScore();
+        }
+
+        // প্রশ্ন এবং অপশন ডিসপ্লে করার ফাংশন
+        function displayQuestion() {
+            if (currentQuestionIndex < quizQuestions.length) {
+                const questionData = quizQuestions[currentQuestionIndex];
+                quizQuestion.textContent = questionData.question;
+
+                quizOptionButtons.forEach((button, index) => {
+                    button.textContent = questionData.options[index];
+                    button.classList.remove('correct', 'incorrect'); // আগের স্টাইল মুছে দিন
+                    button.disabled = false; // অপশনগুলো এনাবল করুন
+                    button.onclick = () => checkAnswer(index); // ইভেন্ট লিসেনার সেট করুন
+                });
+                quizNextButton.disabled = true; // পরবর্তী বাটন ডিজেবল করুন
+                quizNextButton.classList.add('hidden'); // পরবর্তী বাটন লুকান
+            } else {
+                endQuiz();
+            }
+        }
+
+        // উত্তর চেক করার ফাংশন
+        function checkAnswer(selectedIndex) {
+            const questionData = quizQuestions[currentQuestionIndex];
+            if (selectedIndex === questionData.correctAnswerIndex) {
+                score++;
+                quizOptionButtons[selectedIndex].classList.add('correct');
+            } else {
+                quizOptionButtons[selectedIndex].classList.add('incorrect');
+                quizOptionButtons[questionData.correctAnswerIndex].classList.add('correct'); // সঠিক উত্তরটি দেখান
+            }
+            updateScore();
+            disableOptions();
+            quizNextButton.classList.remove('hidden'); // নেক্সট বাটন দেখান
+            quizNextButton.disabled = false; // নেক্সট বাটন এনাবল করুন
+        }
+
+        // অপশনগুলো ডিজেবল করার ফাংশন
+        function disableOptions() {
+            quizOptionButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        // স্কোর আপডেট করার ফাংশন
+        function updateScore() {
+            quizScoreDisplay.textContent = `স্কোর: ${score}`;
+        }
+
+        // পরবর্তী প্রশ্নে যাওয়ার ফাংশন
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // কুইজ শেষ করার ফাংশন
+        function endQuiz() {
+            quizQuestion.textContent = `কুইজ শেষ! আপনার মোট স্কোর: ${score} / ${quizQuestions.length}`;
+            quizOptionsContainer.classList.add('hidden'); // অপশন লুকান
+            quizNextButton.classList.add('hidden'); // নেক্সট বাটন লুকান
+            quizQuitButton.classList.add('hidden'); // কুইট বাটন লুকান
+            quizStartButton.textContent = "আবার শুরু করুন";
+            quizStartButton.classList.remove('hidden'); // স্টার্ট বাটন দেখান
+            quizScoreDisplay.classList.add('hidden'); // স্কোর লুকান
+            quizContent.classList.add('hidden'); // কুইজের বিষয়বস্তু লুকান
+            quizStartButton.onclick = () => { // আবার শুরু করার জন্য ইভেন্ট লিসেনার সেট করুন
+                quizOptionsContainer.classList.remove('hidden');
+                quizScoreDisplay.classList.remove('hidden');
+                startQuiz();
+            };
+        }
+
+        // কুইজ থেকে বের হওয়ার ফাংশন
+        function quitQuiz() {
+            quizStarted = false;
+            quizContent.classList.add('hidden'); // কুইজের বিষয়বস্তু লুকান
+            quizStartButton.classList.remove('hidden'); // স্টার্ট বাটন দেখান
+            quizQuitButton.classList.add('hidden'); // কুইট বাটন লুকান
+            quizNextButton.classList.add('hidden'); // নেক্সট বাটন লুকান (যদি দৃশ্যমান থাকে)
+            quizScoreDisplay.classList.add('hidden'); // স্কোর লুকান
+            quizQuestion.textContent = "প্রশ্ন এখানে থাকবে..."; // প্রশ্ন রিসেট করুন
+            quizStartButton.textContent = "Quiz From Tawsif"; // বাটন টেক্সট রিসেট করুন
+        }
+
+        // ইভেন্ট লিসেনার সেট করুন
+        quizStartButton.addEventListener('click', startQuiz);
+        quizNextButton.addEventListener('click', nextQuestion);
+        quizQuitButton.addEventListener('click', quitQuiz); // কুইট বাটনের ইভেন্ট লিসেনার
+
+        // প্রাথমিক সেটআপ
+        initializeClockOffsets();
+        runClocks();
+        animateTextCycle();
+        window.addEventListener('resize', initializeClockOffsets);
+    </script>
+</body>
+</html>
